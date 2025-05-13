@@ -5,6 +5,7 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 ## Available Scripts
 
 In the project directory, you can run:
+## install react-router-dom, react-chartjs-2, react-icons, react-circular-progressbar if not already available
 
 ## Change key in file App.js, request me to receive key
 
