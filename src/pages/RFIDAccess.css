@@ -1,0 +1,77 @@
+.rfid-access-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px;
+  background: #e8f0fe;
+  min-height: 100vh;
+  font-family: 'Segoe UI', sans-serif;
+  text-align: center;
+}
+
+.rfid-access-container h1 {
+  font-size: 2.5em;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.rfid-access-container p {
+  font-size: 1.2em;
+  color: #555;
+}
+
+.rfid-scan-section {
+  margin-top: 20px;
+  display: flex;
+  gap: 10px;
+}
+
+.rfid-scan-section input {
+  padding: 10px;
+  font-size: 1em;
+  border: 2px solid #ccc;
+  border-radius: 5px;
+}
+
+.rfid-scan-section button {
+  padding: 10px 20px;
+  font-size: 1em;
+  background: #4CAF50;
+  border: none;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.rfid-scan-section button:hover {
+  background: #45a049;
+}
+
+.access-granted, .access-denied {
+  margin-top: 30px;
+  padding: 20px;
+  border-radius: 10px;
+  width: 250px;
+  font-size: 1.3em;
+  font-weight: bold;
+  animation: fadeOut 5s forwards;
+}
+
+.access-granted {
+  background: #e0f7e9;
+  color: #2e7d32;
+  border: 2px solid #2e7d32;
+}
+
+.access-denied {
+  background: #fbe9e7;
+  color: #c62828;
+  border: 2px solid #c62828;
+}
+
+@keyframes fadeOut {
+  0% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { opacity: 0; }
+}

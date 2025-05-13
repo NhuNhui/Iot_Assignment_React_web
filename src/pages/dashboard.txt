@@ -1,0 +1,178 @@
+// src/pages/Dashboard.js
+import React, { useState, useEffect } from 'react';
+import './Dashboard.css';
+import { FaThermometerHalf, FaTint, FaLeaf, FaSun } from 'react-icons/fa';
+import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
+import 'react-circular-progressbar/dist/styles.css';
+
+function Dashboard() {
+  // Khởi tạo state cho các chỉ số
+  const [temperature, setTemperature] = useState(25);     // °C
+  const [airHumidity, setAirHumidity] = useState(55);       // %
+  const [soilMoisture, setSoilMoisture] = useState(40);     // %
+  const [brightness, setBrightness] = useState(700);        // Lux
+
+  // Thay đổi các giá trị giới hạn, nếu cần, dựa trên dữ liệu thực tế của bạn
+  const minTemperature = 20, maxTemperature = 30;
+  const minBrightness = 650, maxBrightness = 850;
+
+  // Cấu hình API của Adafruit IO
+  // Hãy thay YOUR_USERNAME và YOUR_AIO_KEY bằng thông tin của bạn.
+  const AIO_USERNAME = "YOUR_USERNAME";
+  const AIO_KEY = "YOUR_AIO_KEY";
+
+  // Mỗi feed có endpoint riêng, ví dụ:
+  const endpoints = {
+    temperature: `https://io.adafruit.com/api/v2/Giaqui14032002/feeds/temp`,
+    airHumidity: `https://io.adafruit.com/api/v2/Giaqui14032002/feeds/humi`,
+    soilMoisture: `https://io.adafruit.com/api/v2/${AIO_USERNAME}/feeds/soil_moisture`,
+    brightness: `https://io.adafruit.com/api/v2/${AIO_USERNAME}/feeds/brightness`
+  };
+
+  // Hàm fetch dữ liệu từ Adafruit IO
+  const fetchSensorData = async () => {
+    const options = {
+      method: 'GET',
+      headers: {
+        "X-AIO-Key": AIO_KEY,
+        "Content-Type": "application/json"
+      }
+    };
+
+    try {
+      // Fetch nhiệt độ
+      const tempRes = await fetch(endpoints.temperature, options);
+      const tempData = await tempRes.json();
+      // Giả sử trường last_value trả về giá trị dạng chuỗi vì vậy chuyển nó về số
+      setTemperature(Number(tempData.last_value));
+
+      // Fetch độ ẩm không khí
+      const airRes = await fetch(endpoints.airHumidity, options);
+      const airData = await airRes.json();
+      setAirHumidity(Number(airData.last_value));
+
+      // Fetch độ ẩm đất
+      const soilRes = await fetch(endpoints.soilMoisture, options);
+      const soilData = await soilRes.json();
+      setSoilMoisture(Number(soilData.last_value));
+
+      // Fetch độ sáng
+      const brightRes = await fetch(endpoints.brightness, options);
+      const brightData = await brightRes.json();
+      setBrightness(Number(brightData.last_value));
+
+    } catch (error) {
+      console.error("Error fetching sensor data from Adafruit IO:", error);
+    }
+  };
+
+  // Cập nhật dữ liệu mỗi 3 giây, thay vì mô phỏng bằng setInterval ngẫu nhiên
+  useEffect(() => {
+    fetchSensorData(); // Lần gọi đầu tiên
+    const interval = setInterval(() => {
+      fetchSensorData();
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Tính phần trăm cho gauge
+  const temperaturePercent = Math.round(((temperature - minTemperature) / (maxTemperature - minTemperature)) * 100);
+  const brightnessPercent = Math.round(((brightness - minBrightness) / (maxBrightness - minBrightness)) * 100);
+
+  return (
+    <div className="dashboard-container">
+      <h1>Smart Garden Dashboard (Real-Time Data)</h1>
+      <div className="dashboard-grid">
+        {/* Card Nhiệt độ */}
+        <div className="dashboard-card card-temp">
+          <div className="card-icon">
+            <FaThermometerHalf />
+          </div>
+          <div className="gauge-container">
+            <CircularProgressbar 
+              value={temperaturePercent} 
+              text={`${temperature}°C`}
+              styles={buildStyles({
+                pathColor: "#FF5733",
+                textColor: "#fff",
+                trailColor: "rgba(255,255,255,0.3)",
+                textSize: '16px',
+              })}
+            />
+          </div>
+          <div className="card-label">
+            <h2>Nhiệt độ</h2>
+          </div>
+        </div>
+
+        {/* Card Độ ẩm không khí */}
+        <div className="dashboard-card card-air">
+          <div className="card-icon">
+            <FaTint />
+          </div>
+          <div className="gauge-container">
+            <CircularProgressbar 
+              value={airHumidity} 
+              text={`${airHumidity}%`}
+              styles={buildStyles({
+                pathColor: "#3498DB",
+                textColor: "#fff",
+                trailColor: "rgba(255,255,255,0.3)",
+                textSize: '16px',
+              })}
+            />
+          </div>
+          <div className="card-label">
+            <h2>Độ ẩm không khí</h2>
+          </div>
+        </div>
+
+        {/* Card Độ ẩm đất */}
+        <div className="dashboard-card card-soil">
+          <div className="card-icon">
+            <FaLeaf />
+          </div>
+          <div className="gauge-container">
+            <CircularProgressbar 
+              value={soilMoisture} 
+              text={`${soilMoisture}%`}
+              styles={buildStyles({
+                pathColor: "#27ae60",
+                textColor: "#fff",
+                trailColor: "rgba(255,255,255,0.3)",
+                textSize: '16px',
+              })}
+            />
+          </div>
+          <div className="card-label">
+            <h2>Độ ẩm đất</h2>
+          </div>
+        </div>
+
+        {/* Card Độ sáng */}
+        <div className="dashboard-card card-bright">
+          <div className="card-icon">
+            <FaSun />
+          </div>
+          <div className="gauge-container">
+            <CircularProgressbar 
+              value={brightnessPercent} 
+              text={`${brightness} Lux`}
+              styles={buildStyles({
+                pathColor: "#f1c40f",
+                textColor: "#fff",
+                trailColor: "rgba(255,255,255,0.3)",
+                textSize: '16px',
+              })}
+            />
+          </div>
+          <div className="card-label">
+            <h2>Độ sáng</h2>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default Dashboard;

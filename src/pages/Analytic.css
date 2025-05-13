@@ -1,0 +1,24 @@
+.analytic-container {
+  padding: 40px;
+  background: #f7f9fc;
+  min-height: 100vh;
+  text-align: center;
+}
+
+.analytic-container h1 {
+  margin-bottom: 40px;
+  font-size: 2em;
+  color: #333;
+}
+
+.chart-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 40px;
+}
+
+@media screen and (max-width: 480px) {
+  .analytic-container {
+    padding: 20px;
+  }
+}
